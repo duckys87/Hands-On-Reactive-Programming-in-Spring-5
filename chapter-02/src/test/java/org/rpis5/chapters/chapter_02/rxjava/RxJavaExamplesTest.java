@@ -57,18 +57,24 @@ public class RxJavaExamplesTest {
               Executors.newCachedThreadPool().submit(() -> "World");
       Observable<String> world = Observable.from(future);
 
-      Observable.concat(hello, world, Observable.just("!"))
+      Observable.concat(hello, world, Observable.just("!\n"))
          .forEach(System.out::print);
    }
+
+//   Hello World!
 
    @Test
    public void zipOperatorExample() {
       Observable.zip(
               Observable.just("A", "B", "C"),
               Observable.just("1", "2", "3"),
-              (x, y) -> x + y
+              (x, y) -> x + "|" + y
       ).forEach(System.out::println);
    }
+
+//   A|1
+//   B|2
+//   C|3
 
    @Test
    public void timeBasedSequenceExample() throws InterruptedException {
@@ -77,6 +83,12 @@ public class RxJavaExamplesTest {
 
       Thread.sleep(5000);
    }
+
+//   Received: 0
+//   Received: 1
+//   Received: 2
+//   Received: 3
+//   Received: 4
 
    @Test
    public void managingSubscription() {
@@ -94,6 +106,11 @@ public class RxJavaExamplesTest {
       } while (!subscription.get().isUnsubscribed());
    }
 
+//   Received: 0
+//   Received: 1
+//   Received: 2
+//   Received: 3
+
    @Test
    public void managingSubscription2() throws InterruptedException {
       CountDownLatch externalSignal = new CountDownLatch(3);
@@ -106,10 +123,17 @@ public class RxJavaExamplesTest {
       subscription.unsubscribe();
    }
 
+//           0
+//           1
+//           2
+//           3
+
    @Test
    public void deferSynchronousRequest() throws Exception {
-      String query = "query";
+      String query = "testResult";
       Observable.fromCallable(() -> doSlowSyncRequest(query))
+         // SubscribeOn은 구독(subscribe)에서 사용할 스레드를 지정
+         // Schedulers.io() - 동기 I/O를 별도로 처리시켜 비동기 효율을 얻기 위한 스케줄러입니다. 자체적인 스레드 풀에 의존합니다.
          .subscribeOn(Schedulers.io())
          .subscribe(this::processResult);
 
@@ -117,11 +141,12 @@ public class RxJavaExamplesTest {
    }
 
    private String doSlowSyncRequest(String query) {
-      return "result";
+      return query;
    }
 
    private void processResult(String result) {
       System.out.println(Thread.currentThread().getName() + ": " + result);
    }
 
+//   RxIoScheduler-2: testResult
 }
