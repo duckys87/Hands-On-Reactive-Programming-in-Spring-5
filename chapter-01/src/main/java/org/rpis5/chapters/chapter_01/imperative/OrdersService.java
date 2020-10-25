@@ -1,29 +1,37 @@
 package org.rpis5.chapters.chapter_01.imperative;
 
+import lombok.extern.slf4j.Slf4j;
 import org.rpis5.chapters.chapter_01.commons.Input;
 import org.rpis5.chapters.chapter_01.commons.Output;
 
+@Slf4j
 public class OrdersService {
-
-    private final ShoppingCardService scService;
-
-    public OrdersService(ShoppingCardService scService) {
-        this.scService = scService;
-    }
-
-    void process() {
-        Input input = new Input();
-        Output output = scService.calculate(input);
-
-        System.out.println(scService.getClass().getSimpleName() + " execution completed");
-    }
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
+        OrdersService ordersService = new OrdersService();
 
-        new OrdersService(new BlockingShoppingCardService()).process();
-        new OrdersService(new BlockingShoppingCardService()).process();
+        ordersService.process();
+        ordersService.process();
 
-        System.out.println("Total elapsed time in millis is : " + (System.currentTimeMillis() - start));
+        //앞 sync 요청이 모두 처리 완료된 후 실행된다.
+        log.info("Total elapsed time in millis is : " + (System.currentTimeMillis() - start));
+    }
+
+    void process() {
+        log.info("calculate call");
+        log.info("calculate value : "+calculate("test"));
+
+        log.info("process ended");
+    }
+
+    public String calculate(String value) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return value + " added value";
     }
 }
