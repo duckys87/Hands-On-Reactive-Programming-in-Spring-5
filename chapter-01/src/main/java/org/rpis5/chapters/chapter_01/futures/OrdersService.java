@@ -16,8 +16,15 @@ public class OrdersService {
 
         OrdersService ordersService1 = new OrdersService();
 
-        ordersService1.process();
-        ordersService1.process();
+//        ordersService1.process();
+//        ordersService1.process();
+
+        new Thread(() -> {
+            ordersService1.process();
+        }).start();
+        new Thread(() -> {
+            ordersService1.process();
+        }).start();
 
         //위 future 작업이 끝날때까지 기다림 (즉 블로킹)
         log.info("Total elapsed time in millis is : " + (System.currentTimeMillis() - start));
