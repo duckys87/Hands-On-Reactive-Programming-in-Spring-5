@@ -16,12 +16,19 @@ public class TemperatureSensor {
 
    private final Observable<Temperature> dataStream =
       Observable
+         //해당 범위만큼 숫자 생성
          .range(0, Integer.MAX_VALUE)
+         //순서대로 데이터 처리를 보장해주는 map
          .concatMap(ignore -> Observable
+            //just는 들어온 인자 순서대로 데이터를 차례로 발생(이 경우는 인자가 1개니 걍 1이 발행됨)
             .just(1)
+            //5초내 랜덤하게 delay
             .delay(rnd.nextInt(5000), MILLISECONDS)
+            //받아들인 데이터를 새로운 형태로 변
             .map(ignore2 -> this.probe()))
+         //Observable을 ConnectableObservable로 변
          .publish()
+         //몇명의 구독자가 있는지 알려줌
          .refCount();
 
    public Observable<Temperature> temperatureStream() {

@@ -17,6 +17,7 @@ public class ParallelSubject implements Subject<String> {
       observers.remove(observer);
    }
 
+   //메시지 통보를 별도의 Thread에서 처리
    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
    public void notifyObservers(String event) {

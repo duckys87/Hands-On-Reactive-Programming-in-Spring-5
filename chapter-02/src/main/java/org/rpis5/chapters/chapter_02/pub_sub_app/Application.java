@@ -11,8 +11,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+//비동기 통신처리하겠다는 의미
 @EnableAsync
 @SpringBootApplication
+//AsyncConfigurer을 구현하고 getAsyncExecutor()와 getAsyncUncaughtExceptionHandler()를 오버라이딩
+//@Async로 지정된 메소드를 실행하는 기본 실행자가 해당 설정으로 변경된다
+//설정안하면 default 는 SimpleAsyncTaskExecutor 이다.(즉 SimpleAsyncTaskExecutor로 안하려면 커스터마이징 하는것)
 public class Application implements AsyncConfigurer {
 
    public static void main(String[] args) {
