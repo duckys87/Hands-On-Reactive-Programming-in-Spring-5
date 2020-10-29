@@ -10,7 +10,7 @@ public class ReactiveContextTest {
     public void showcaseContext() {
         printCurrentContext("top")
                 .subscriberContext(Context.of("top", "context"))
-                .flatMap(__ -> printCurrentContext("middle"))
+                .flatMap(a -> printCurrentContext("middle"))
                 .subscriberContext(Context.of("middle", "context"))
                 .flatMap(__ -> printCurrentContext("bottom"))
                 .subscriberContext(Context.of("bottom", "context"))

@@ -153,13 +153,14 @@ public class ReactorEssentialsTest {
     @Test
     public void mySubscriber() {
         Flux.just("A", "B", "C")
+            .log()
             .subscribe(new MySubscriber<>());
     }
 
     @Test
     public void simpleRange() {
         Flux.range(2010, 9)
-            .subscribe(y -> System.out.print(y + ","));
+            .subscribe(y -> log.info(y+""));
     }
 
     @Test
@@ -180,7 +181,7 @@ public class ReactorEssentialsTest {
         streamOfData
             .skipUntilOther(startCommand)
             .takeUntilOther(stopCommand)
-            .subscribe(System.out::println);
+            .subscribe(s->log.info(s+""));
 
         Thread.sleep(4000);
     }
@@ -189,7 +190,7 @@ public class ReactorEssentialsTest {
     public void collectSort() {
         Flux.just(1, 6, 2, 8, 3, 1, 5, 1)
             .collectSortedList(Comparator.reverseOrder())
-            .subscribe(System.out::println);
+            .subscribe(s->log.info(s+""));
     }
 
     @Test
@@ -259,7 +260,7 @@ public class ReactorEssentialsTest {
     @Test
     public void windowByPredicate() {
         Flux<Flux<Integer>> fluxFlux = Flux.range(101, 20)
-            .windowUntil(this::isPrime, true);
+            .windowUntil(s->s%3==0, true);
 
         fluxFlux.subscribe(window -> window
             .collectList()
