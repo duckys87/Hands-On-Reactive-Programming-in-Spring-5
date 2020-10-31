@@ -588,14 +588,14 @@ public class ReactorEssentialsTest {
     public void transformExample() {
         Function<Flux<String>, Flux<String>> logUserInfo =
             stream -> stream
-                .index()
+                .index()    //수신 이벤트를 열거형으로 전환
                 .doOnNext(tp ->
                     log.info("[{}] User: {}", tp.getT1(), tp.getT2()))
-                .map(Tuple2::getT2);
+                .map(Tuple2::getT2);    //다시 아래 Flux로 돌아갈때는 T2(원래 값)만 보내기 때문에 값 그대로 돌려보냄
 
         Flux.range(1000, 3)
             .map(i -> "user-" + i)
-            .transform(logUserInfo)
+            .transform(logUserInfo) //마치 함수호출처럼 logUserInfo로 user-1000, .. 값들을 하나하나 보냄
             .subscribe(e -> log.info("onNext: {}", e));
     }
 
@@ -612,7 +612,8 @@ public class ReactorEssentialsTest {
         };
 
         Flux<String> publisher = Flux.just("1", "2")
-            .compose(logUserInfo);
+            .compose(logUserInfo);      //compose는 구독때마다 윗 Flux가 새로 처리
+//            .transform(logUserInfo);  //transfrom은 윗 Flux가 한번 처리되면 고정됨
 
         publisher.subscribe();
         publisher.subscribe();

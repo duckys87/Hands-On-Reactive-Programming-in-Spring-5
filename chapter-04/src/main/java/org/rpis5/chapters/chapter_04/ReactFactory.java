@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.util.function.Tuples;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -47,22 +48,46 @@ public class ReactFactory {
 //        23:51:41.087 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory - 13
 
 
+        Flux.using(     //using을 사용해 여러 작업을 하나의 라이프사이클로 지정가능 (아래 일부러 지연을 줘봤는데 비동기지만 순차적으로 처리해줌)
+                Connection::newConnection,
+                connection->Flux.fromIterable(connection.getData()),
+                Connection::close
+        ).subscribe(
+                data -> log.info("Data : " + data),
+                e -> log.error("Error : " + e.getMessage()),
+                ()->log.info("onComplete")
+        );
+
+//16:11:49.827 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory$Connection - IO Connection created
+//16:11:50.834 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory - Data : Some
+//16:11:50.834 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory - Data : data
+//16:11:51.839 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory$Connection - IO Connection closed
+//16:11:51.839 [main] INFO org.rpis5.chapters.chapter_04.ReactFactory - onComplete
 
 
 
 
+    }
 
 
+    @Slf4j
+    static class Connection implements AutoCloseable {
+        public static Connection newConnection() {
+            try {Thread.sleep(1000);} catch (InterruptedException e) {}
+            log.info("IO Connection created");
+            return new Connection();
+        }
 
+        public Iterable<String> getData() {
+            try {Thread.sleep(1000);} catch (InterruptedException e) {}
+            return Arrays.asList("Some", "data");
+        }
 
-
-
-
-
-
-
-
-
+        @Override
+        public void close() {
+            try {Thread.sleep(1000);} catch (InterruptedException e) {}
+            log.info("IO Connection closed");
+        }
     }
 
 }

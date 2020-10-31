@@ -179,5 +179,11 @@ public class ReactFunction {
 //        22:57:50.980 [main] INFO org.rpis5.chapters.chapter_04.ReactFunction - doOnEach_onNext(3)
 //        22:57:50.987 [main] INFO org.rpis5.chapters.chapter_04.ReactFunction - onError(java.lang.Exception)
 
+
+
+
     }
+
+
+
 }
